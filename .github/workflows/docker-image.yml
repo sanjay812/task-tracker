@@ -30,11 +30,8 @@ jobs:
       run: | 
         docker run -d --name task-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=posotgres -p 5432:5432 postgres:15
         docker ps
-    - name: Set env for tests
-      run: echo "DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres" >> $GITHUB_ENV
-    - name: Validate DATABASE_URL
-      run: echo "DATABASE_URL=$DATABASE_URL"
+    
     # Run tests
-    #- name: Run unit tests
-    #  run: |
-    #    PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
+    - name: Run unit tests
+      run: |
+        PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
