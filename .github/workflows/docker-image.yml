@@ -8,7 +8,7 @@ on:
 
 jobs:
   
-  buildAndTest:
+  build-test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -38,3 +38,23 @@ jobs:
         sleep 5
         export DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
         PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
+  build-push:
+    runs-on: ubuntu-latest
+    needs: build-test  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}: v1
+          docker build -t $IMAGE .
+          docker push $IMAGE
+    
