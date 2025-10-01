@@ -17,8 +17,8 @@ storage:
       bucket: "my-tf-logs-66cec2cd"
       endpoint: s3.amazonaws.com
       region: ap-south-1
-      access_key_id: "AKIAUG5NCPGIKCGYVUBI"
-      secret_access_key: "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"
+      access_key: "AKIAUG5NCPGIKCGYVUBI"
+      secret_access: "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"
       insecure: false
 
 compactor:
