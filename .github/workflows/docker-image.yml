@@ -15,33 +15,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    # Setup Python
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-
-    # Cache pip packages
-    - name: Cache pip
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: start db
-      run: | 
-        docker run -d --name task-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=posotgres -p 5432:5432 postgres:15
-        sleep 5
-        export DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
-        PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
-
+    
    ##EC2
     - name: Setup SSH key
       run: |
@@ -58,30 +32,7 @@ jobs:
     - name: Connect to EC2 and run docker-compose
       run: |
         ssh -i ~/.ssh/id_rsa ubuntu@3.108.64.74
+        cd /home/ubuntu/deployments
         ls
-    - name: start docker
-      run: |
-        if ! sudo docker version &> /dev/null
-        then
-            echo "Docker not found. Installing..."
-            sudo apt-get install docker.io     
-        else
-            echo "Docker is already installed."
-        fi   
-        # Check Docker Compose 
-        if ! sudo docker compose version &> /dev/null
-        then
-            echo "Docker Compose not found. Installing..."
-            sudo apt-get install docker-compose-plugin -y
-        else
-            echo "Docker Compose is already installed."
-        fi
-        
-        # Start and enable Docker
-        
-        echo "Starting Docker..."
-        sudo systemctl enable docker
-        sudo systemctl start docker
-        sudo systemctl status docker --no-pager
-
+    
         
