@@ -58,4 +58,28 @@ jobs:
     - name: Connect to EC2 and run docker-compose
       run: |
         ssh -i ~/.ssh/id_rsa ubuntu@3.108.64.74
+    - name: start docker
+      run: |
+        if ! sudo docker version &> /dev/null
+        then
+            echo "Docker not found. Installing..."
+            sudo apt-get install docker.io     
+        else
+            echo "Docker is already installed."
+        fi   
+        # Check Docker Compose 
+        if ! sudo docker compose version &> /dev/null
+        then
+            echo "Docker Compose not found. Installing..."
+            sudo apt-get install docker-compose-plugin -y
+        else
+            echo "Docker Compose is already installed."
+        fi
+        
+        # Start and enable Docker
+        
+        echo "Starting Docker..."
+        sudo systemctl enable docker
+        sudo systemctl start docker
+        sudo systemctl status docker --no-pager
    
