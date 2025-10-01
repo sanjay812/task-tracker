@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Response, Depends
+from fastapi import FastAPI, HTTPException, Response, Depends, status
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -167,17 +167,21 @@ async def get_task(task_id: int):
         logger.info(f"Fetched task: id={task['id']}, title={task['title']}, description={task['description']}, completed={task['completed']}, created_at={task['created_at']}, updated_at={task['updated_at']}") 
     return task
 
-@app.delete("/tasks/{task_id}", status_code=204)
-async def delete_task(task_id: int):
-    with tracer.start_as_current_span("delete_task"):
-        query = tasks.delete().where(tasks.c.id == task_id)
-        result = await database.execute(query)
-        if result == 0:
-            logger.warning(f"Task not found to delete with id: {task_id}")
-            raise HTTPException(status_code=404, detail="Task not found")
-        logger.info(f"Deleted task with id: {task_id}")
-        return Response(status_code=204)
+@app.delete("/tasks", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_all_tasks():
+    with tracer.start_as_current_span("delete_all_tasks"):
+        # Delete all rows
+        delete_query = tasks.delete()
+        await database.execute(delete_query)
 
+        # Reset the PostgreSQL sequence
+        reset_seq_query = "ALTER SEQUENCE tasks_id_seq RESTART WITH 1"
+        await database.execute(reset_seq_query)
+
+        logger.info("Deleted all tasks and reset tasks_id_seq sequence")
+        
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+        
 @app.middleware("http")
 async def prometheus_middleware(request, call_next):
     start_time = time.time()

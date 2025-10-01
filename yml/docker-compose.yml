@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    build: .
+    image: ghcr.io/sanjay812/task-tracker:v1
     container_name: task-tracker
     ports:
       - "8000:8000"
@@ -78,6 +78,7 @@ services:
     command:
       - -config.file=/etc/loki/loki-config.yml
       - -target=all
+    user: "10001:10001"
     volumes:
       - ./loki-config.yml:/etc/loki/loki-config.yml:ro
       - ./loki-data:/loki
