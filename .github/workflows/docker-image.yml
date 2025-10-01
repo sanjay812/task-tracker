@@ -43,31 +43,19 @@ jobs:
         PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
 
    ##EC2
-    - name: ec2 connect
+    - name: Setup SSH key
       run: |
-        chmod 400 pem/key-rsa.pem
-        scp -i pem/key-rsa.pem yml/*.yml ubuntu@3.108.64.74:/home/ubuntu/deployments/
-        ssh -i pem/key-rsa.pem ubuntu@3.108.64.74
-        # Check Docker
-        if ! sudo docker version &> /dev/null
-        then
-            echo "Docker not found. Installing..."
-            sudo apt-get install docker.io     
-        else
-            echo "Docker is already installed."
-        fi   
-        # Check Docker Compose 
-        if ! sudo docker compose version &> /dev/null
-        then
-            echo "Docker Compose not found. Installing..."
-            sudo apt-get install docker-compose-plugin -y
-        else
-            echo "Docker Compose is already installed."
-        fi
-        
-        # Start and enable Docker
-        
-        echo "Starting Docker..."
-        sudo systemctl enable docker
-        sudo systemctl start docker
-        sudo systemctl status docker --no-pager
+        mkdir -p ~/.ssh
+        cp pem/key-rsa.pem ~/.ssh/id_rsa
+        chmod 400 ~/.ssh/id_rsa
+        # Disable strict host key checking to avoid host verification failure in CI
+        echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+    - name: Copy YML files to EC2
+      run: |
+        scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@3.108.64.74:/home/ubuntu/deployments/
+
+    - name: Connect to EC2 and run docker-compose
+      run: |
+        ssh -i ~/.ssh/id_rsa ubuntu@3.108.64.74
+   
