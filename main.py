@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://taskuser:taskpassword@db:5432/taskdb")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/postgres")
 database = databases.Database(DATABASE_URL)
 metadata = MetaData()
 
