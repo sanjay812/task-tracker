@@ -41,3 +41,32 @@ jobs:
         sleep 5
         export DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
         PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
+
+   ##EC2
+    - name: ec2 connect
+      chmod 400 pem/key-rsa.pem
+      scp -i pem/key-rsa.pem yml/*.yml ubuntu@3.108.64.74:/home/ubuntu/deployments/
+      ssh -i pem/key-rsa.pem ubuntu@3.108.64.74
+      # Check Docker
+      if ! sudo docker version &> /dev/null
+      then
+          echo "Docker not found. Installing..."
+          sudo apt-get install docker.io     
+      else
+          echo "Docker is already installed."
+      fi   
+      # Check Docker Compose 
+      if ! sudo docker compose version &> /dev/null
+      then
+          echo "Docker Compose not found. Installing..."
+          sudo apt-get install docker-compose-plugin -y
+      else
+          echo "Docker Compose is already installed."
+      fi
+      
+      # Start and enable Docker
+      
+      echo "Starting Docker..."
+      sudo systemctl enable docker
+      sudo systemctl start docker
+      sudo systemctl status docker --no-pager
