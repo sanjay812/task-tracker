@@ -1,37 +1,57 @@
+import os
 import pytest
 from fastapi.testclient import TestClient
-from main import app
+from main import app, database, metadata, DATABASE_URL
+from sqlalchemy import create_engine
 
-client = TestClient(app)
+# -----------------------------
+# Setup DATABASE_URL for tests
+# -----------------------------
+os.environ["DATABASE_URL"] = os.getenv("DATABASE_URL")
 
-def test_create_task():
-    response = client.post(
-        "/tasks",
-        json={"title": "Test Task", "description": "testing", "completed": False}
-    )
+# Create tables if they don't exist
+engine = create_engine(DATABASE_URL)
+metadata.create_all(engine)
+
+# -----------------------------
+# Test client fixture
+# -----------------------------
+@pytest.fixture(scope="module")
+def client():
+    """
+    TestClient with FastAPI startup/shutdown events.
+    Ensures the database connection is acquired for tests.
+    """
+    with TestClient(app) as c:
+        yield c
+
+# -----------------------------
+# Tests
+# -----------------------------
+def test_create_task(client):
+    response = client.post("/tasks", json={"title": "Test Task", "description": "Test description"})
     assert response.status_code == 201
     data = response.json()
     assert data["title"] == "Test Task"
+    assert data["description"] == "Test description"
     assert data["completed"] is False
+    assert "id" in data
 
-def test_list_tasks():
-    # Ensure at least one task exists
-    client.post("/tasks", json={"title": "List Task", "completed": False})
-    
+def test_list_tasks(client):
     response = client.get("/tasks")
     assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
-    assert len(data) >= 1
+    tasks = response.json()
+    assert isinstance(tasks, list)
+    assert any(task["title"] == "Test Task" for task in tasks)
 
-def test_get_task_by_id():
-    # Create a task first
-    create_resp = client.post("/tasks", json={"title": "Fetch Task"})
-    task_id = create_resp.json()["id"]
+def test_get_task(client):
+    # First, create a task
+    response = client.post("/tasks", json={"title": "Another Task"})
+    task_id = response.json()["id"]
 
-    # Fetch the same task
+    # Fetch the task
     response = client.get(f"/tasks/{task_id}")
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == task_id
-    assert data["title"] == "Fetch Task"
+    assert data["title"] == "Another Task"
