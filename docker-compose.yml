@@ -2,6 +2,7 @@ version: '3.7'
 services:
   api:
     build: .
+    container_name: task-tracker
     ports:
       - "8000:8000"
     environment:
@@ -13,6 +14,8 @@ services:
   postgres_db:
     image: postgres:15
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -36,6 +39,7 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)'
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
@@ -46,6 +50,7 @@ services:
   
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     ports:
       - "3000:3000"
     environment:
@@ -58,6 +63,7 @@ services:
   
   tempo:
     image: grafana/tempo:latest
+    container_name: tempo
     ports:
       - "3200:3200"       # Tempo querier HTTP
     command:
@@ -66,6 +72,7 @@ services:
       - ./tempo-config.yml:/etc/tempo/tempo.yml:ro
   loki:
     image: grafana/loki:latest
+    container_name: loki
     ports:
       - "3100:3100"
     command:
@@ -74,6 +81,17 @@ services:
     volumes:
       - ./loki-config.yml:/etc/loki/loki-config.yml:ro
       - ./loki-data:/loki
+  mimir:
+    image: grafana/mimir:latest
+    container_name: mimir
+    command:
+      - -config.file=/etc/mimir/mimir-config.yml
+      - -target=all
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./mimir-config.yml:/etc/mimir/mimir-config.yml:ro
+      - ./mimir-data:/var/mimir
 
 volumes:
   pg_data:

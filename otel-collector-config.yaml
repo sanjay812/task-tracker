@@ -11,9 +11,9 @@ receivers:
         - job_name: 'node_exporter'
           static_configs:
             - targets: ['node-exporter:9100']  # Adjust if Node Exporter runs elsewhere
-        - job_name: 'fastapi_app'
+        - job_name: 'app'
           static_configs:
-            - targets: ['fastapi-api-1:8000']  # Your app metrics endpoint
+            - targets: ['task-tracker:8000']  # Your app metrics endpoint
 
 processors:
   batch:
@@ -22,8 +22,9 @@ exporters:
   debug:
     verbosity: basic
   otlphttp:
-    traces_endpoint: http://fastapi-tempo-1:4316/v1/traces
-    logs_endpoint: http://fastapi-loki-1:3100/otlp/v1/logs
+    traces_endpoint: http://tempo:4316/v1/traces
+    logs_endpoint: http://loki:3100/otlp/v1/logs
+    metrics_endpoint: http://mimir:9009/otlp/v1/metrics
     tls:
       insecure: true
 
@@ -37,7 +38,7 @@ service:
     metrics:
       receivers: [otlp, prometheus]
       processors: [batch]
-      exporters: [debug]
+      exporters: [otlphttp]
 
     logs:
       receivers: [otlp]
