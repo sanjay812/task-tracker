@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc: 
+          endpoint: 0.0.0.0:4315
+        http: 
+          endpoint: 0.0.0.0:4316
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      bucket: "8122000"
+      endpoint: s3.amazonaws.com
+      access_key: "AKIAUG5NCPGIKKS5KG6A"
+      secret_key: "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"
+      region: ap-south-1
+      insecure: false
+
+compactor:
+  compaction:
+    compaction_window: 1m

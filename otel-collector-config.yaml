@@ -1,0 +1,45 @@
+receivers:
+  otlp:
+    protocols:
+      grpc: 
+        endpoint: 0.0.0.0:4317
+      http: 
+        endpoint: 0.0.0.0:4318
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'node_exporter'
+          static_configs:
+            - targets: ['node-exporter:9100']  # Adjust if Node Exporter runs elsewhere
+        - job_name: 'fastapi_app'
+          static_configs:
+            - targets: ['fastapi-api-1:8000']  # Your app metrics endpoint
+
+processors:
+  batch:
+
+exporters:
+  debug:
+    verbosity: basic
+  otlphttp:
+    traces_endpoint: http://fastapi-tempo-1:4316/v1/traces
+    logs_endpoint: http://fastapi-loki-1:3100/otlp/v1/logs
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]
+
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [batch]
+      exporters: [debug]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]

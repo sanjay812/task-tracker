@@ -1,0 +1,80 @@
+version: '3.7'
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres_db:5432/postgres
+    depends_on:
+      - postgres_db
+      - node-exporter
+      - otel-collector
+  postgres_db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)'
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317"     # OTLP gRPC
+      - "8888:8888"     # Prometheus metrics endpoint
+    restart: unless-stopped
+  
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - tempo
+      - loki
+    volumes:
+      - grafana-storage:/var/lib/grafana
+  
+  tempo:
+    image: grafana/tempo:latest
+    ports:
+      - "3200:3200"       # Tempo querier HTTP
+    command:
+      - -config.file=/etc/tempo/tempo.yml
+    volumes:
+      - ./tempo-config.yml:/etc/tempo/tempo.yml:ro
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command:
+      - -config.file=/etc/loki/loki-config.yml
+      - -target=all
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml:ro
+      - ./loki-data:/loki
+
+volumes:
+  pg_data:
+  grafana-storage:

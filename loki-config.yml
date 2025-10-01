@@ -1,0 +1,45 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path_prefix: /loki   
+
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+    final_sleep: 0s
+
+storage_config:
+  aws:
+    bucketnames: 8122000
+    s3forcepathstyle: true
+    region: ap-south-1
+    access_key_id: AKIAUG5NCPGIKKS5KG6A
+    secret_access_key: 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
+
+  tsdb_shipper:
+    active_index_directory: /loki/tsdb-index
+    cache_location: /loki/tsdb-cache
+schema_config:
+  configs:
+    - from: 2025-09-30
+      store: tsdb
+      object_store: aws
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+compactor:
+  working_directory: /loki/compactor
+
+limits_config:
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  max_query_lookback: 0s
