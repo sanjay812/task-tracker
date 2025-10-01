@@ -17,12 +17,9 @@ ingester:
 
 storage_config:
   aws:
-    bucketnames: 8122000
+    bucketnames: my-tf-logs-66cec2cd
     s3forcepathstyle: true
     region: ap-south-1
-    access_key_id: AKIAUG5NCPGIKKS5KG6A
-    secret_access_key: 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
-
   tsdb_shipper:
     active_index_directory: /loki/tsdb-index
     cache_location: /loki/tsdb-cache

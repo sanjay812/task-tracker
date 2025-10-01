@@ -11,22 +11,20 @@ common:
     s3:
       endpoint: s3.ap-south-1.amazonaws.com
       region: ap-south-1
-      access_key_id: AKIAUG5NCPGIKKS5KG6A
-      secret_access_key: 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
 
 blocks_storage:
   s3:
-    bucket_name: "8122000"
+    bucket_name: "my-tf-logs-66cec2cd"
   storage_prefix: "blocks"
 
 alertmanager_storage:
   s3:
-    bucket_name: "8122000"
+    bucket_name: "my-tf-logs-66cec2cd"
   storage_prefix: "alertmanager"
 
 ruler_storage:
   s3:
-    bucket_name: "8122000"
+    bucket_name: "my-tf-logs-66cec2cd"
   storage_prefix: "ruler"
 ingester:
   ring:
