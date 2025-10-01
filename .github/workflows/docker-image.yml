@@ -36,7 +36,7 @@ jobs:
         pip install -r requirements.txt
         
     - name: Set env for tests
-      run: echo "DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres" >> $GITHUB_ENV
+      run: echo "DATABASE_URL=postgresql://postgres:password@postgres:5432/postgres" >> $GITHUB_ENV
     # Run tests
     - name: Run unit tests
       run: |
