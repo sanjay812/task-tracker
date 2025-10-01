@@ -57,7 +57,7 @@ jobs:
           cd /home/ubuntu/deployments
           sudo mkdir -p ./loki-data
           sudo chown -R 10001:10001 ./loki-data
-          sudo docker compose up -d
+          sudo docker-compose up -d
         EOF
     
         
