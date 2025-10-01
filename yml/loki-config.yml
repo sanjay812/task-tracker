@@ -20,6 +20,8 @@ storage_config:
     bucketnames: my-tf-logs-66cec2cd
     s3forcepathstyle: true
     region: ap-south-1
+    access_key_id: AKIAUG5NCPGIKCGYVUBI
+    secret_access_key: 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
   tsdb_shipper:
     active_index_directory: /loki/tsdb-index
     cache_location: /loki/tsdb-cache
