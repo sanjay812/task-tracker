@@ -29,9 +29,6 @@ jobs:
     - name: start db
       run: | 
         docker run -d --name task-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=posotgres -p 5432:5432 postgres:15
-        docker ps
-    
-    # Run tests
-    - name: Run unit tests
-      run: |
+        sleep 5
+        export DATABASE_URL=postgresql://postgres:password@localhost:5432/postgres
         PYTHONPATH=. pytest -v --maxfail=1 --disable-warnings
