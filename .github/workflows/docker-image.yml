@@ -1,0 +1,28 @@
+name: Docker Image CI
+on:
+  push:
+    branches: [ "main" ]
+  #pull_request:
+  #  branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set Docker Tag
+        id: vars
+        run: |
+          DATE=$(date +%d%m%Y)
+          # use GitHub run number to auto-increment (no need to manage counter file)
+          COUNT=${{ github.run_number }}
+          TAG="$DATE.$COUNT"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+    
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag task-tracker:${TAG}
