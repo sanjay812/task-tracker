@@ -26,9 +26,9 @@ jobs:
         # Loop over all YAML files and replace placeholders
         for f in yml/*.yml; do
           sed -i \
-            -e "s|\${{ secrets.S3_BUCKET_NAME }}|$S3_BUCKET|g" \
-            -e "s|\${{ secrets.IAM_ACCESS_KEY_ID }}|$AWS_ACCESS_KEY|g" \
-            -e "s|\${{ secrets.IAM_SECRET_ACCESS_KEY }}|$AWS_SECRET_KEY|g" "$f"
+          -e "s|\\${{ secrets.S3_BUCKET }}|$S3_BUCKET|g" \
+          -e "s|\\${{ secrets.S3_ACCESS_KEY }}|$S3_ACCESS_KEY|g" \
+          -e "s|\\${{ secrets.S3_SECRET_KEY }}|$S3_SECRET_KEY|g" "$f"
         done
 
         cat yml/loki-config.yml
