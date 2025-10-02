@@ -99,6 +99,7 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" << 'EOF'
     cd /home/ubuntu/deployments
     sudo mkdir -p ./loki-data
     sudo chown -R 10001:10001 ./loki-data
+    sudo docker compose pull
     sudo docker compose up -d
 
 
