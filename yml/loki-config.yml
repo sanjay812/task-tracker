@@ -17,11 +17,11 @@ ingester:
 
 storage_config:
   aws:
-    bucketnames: ${{ secrets.S3_BUCKET_NAME }}
+    bucketnames: ${S3_BUCKET_NAME}
     s3forcepathstyle: true
     region: ap-south-1
-    access_key_id: ${{ secrets.IAM_ACCESS_KEY_ID }}
-    secret_access_key: ${{ secrets.IAM_SECRET_ACCESS_KEY }}
+    access_key_id: ${S3_ACCESS_KEY}
+    secret_access_key: ${S3_SECRET_KEY}
   tsdb_shipper:
     active_index_directory: /loki/tsdb-index
     cache_location: /loki/tsdb-cache
