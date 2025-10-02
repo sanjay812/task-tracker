@@ -69,7 +69,7 @@ services:
     environment:
       - S3_BUCKET=${S3_BUCKET}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
-      - S3_SECRET_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
     command:
       - -config.file=/etc/tempo/tempo.yml
     volumes:
@@ -82,7 +82,7 @@ services:
     environment:
       - S3_BUCKET=${S3_BUCKET}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
-      - S3_SECRET_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
     command:
       - -config.file=/etc/loki/loki-config.yml
       - -target=all
@@ -101,7 +101,7 @@ services:
     environment:
       - S3_BUCKET=${S3_BUCKET}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
-      - S3_SECRET_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
     volumes:
       - ./mimir-config.yml:/etc/mimir/mimir-config.yml:ro
       - ./mimir-data:/var/mimir
