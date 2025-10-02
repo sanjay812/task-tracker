@@ -66,48 +66,5 @@ jobs:
           S3_ACCESS_KEY: ${{ secrets.IAM_ACCESS_KEY_ID }} 
           S3_SECRET_KEY: ${{ secrets.IAM_SECRET_ACCESS_KEY }}
         run: |
-            # Path to your private key in the repo
-            KEY_PATH="pem/my-terraform-key.pem"
-            
-            # Ensure SSH key exists
-            if [[ ! -f "$KEY_PATH" ]]; then
-              echo "Error: SSH key not found at $KEY_PATH"
-              exit 1
-            fi
-            
-            # --- SSH Key Setup ---
-            echo "Setting up SSH key..."
-            mkdir -p ~/.ssh
-            cp "$KEY_PATH" ~/.ssh/id_rsa
-            chmod 400 ~/.ssh/id_rsa
-            
-            # Disable strict host key checking (avoid CI host verification failure)
-            echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-            ## Copy files
-            scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@$EC2_IP:/home/ubuntu/deployments/
-            ssh -i ~/.ssh/id_rsa ubuntu@$EC2_IP "EC2_IP='${EC2_IP}' S3_BUCKET='${S3_BUCKET}' DOCKERHUB_USERNAME='${DOCKERHUB_USERNAME}' DOCKERHUB_PASSWORD='${DOCKERHUB_PASSWORD}' S3_ACCESS_KEY='${S3_ACCESS_KEY}' S3_SECRET_KEY='${S3_SECRET_KEY}'  bash -s" << 'EOF'
-            env | grep -E '^(EC2_|S3_|DOCKERHUB_)' > env.txt
-            cat env.txt
-            sed -i '/# APP_SECRETS_START/,/# APP_SECRETS_END/d' ~/.bashrc
-            # Write new block
-            {
-              echo "# APP_SECRETS_START"
-              awk '{print "export " $0}' env.txt
-              echo "# APP_SECRETS_END"
-            } >> ~/.bashrc
-            # --- Step 4: Ensure .profile sources .bashrc ---
-            PROFILE_FILE="$HOME/.profile"
-            if ! grep -q 'source ~/.bashrc' "$PROFILE_FILE"; then
-              echo -e "\n# Source bashrc for all login sessions\n[ -f ~/.bashrc ] && . ~/.bashrc" >> "$PROFILE_FILE"
-            fi
-            
-            # --- Step 5: Optional: apply immediately for this session ---
-            source ~/.bashrc
-            
-            # --- Step 6: Debug: show last 10 lines of .bashrc and .profile ---
-            echo "---- ~/.bashrc ----"
-            tail -n 10 ~/.bashrc
-            echo "---- ~/.profile ----"
-            tail -n 10 ~/.profile
-            
-            EOF
+            chmod +x deploy.sh
+            ./deploy.sh
