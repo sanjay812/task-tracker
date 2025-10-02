@@ -29,8 +29,6 @@ jobs:
         
       - name: Terraform Apply
         run: |
-            terraform refresh
-            terraform destroy -auto-approve
             terraform apply -auto-approve
 
       - name: Install GitHub CLI
