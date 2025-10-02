@@ -71,8 +71,8 @@ services:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
     command:
-      - -config.file=/etc/tempo/tempo.yml
       - -config.expand-env=true
+      - -config.file=/etc/tempo/tempo.yml
     volumes:
       - ./tempo-config.yml:/etc/tempo/tempo.yml:ro
   loki:
@@ -85,9 +85,9 @@ services:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
     command:
+      - - -config.expand-env=true
       - -config.file=/etc/loki/loki-config.yml
       - -target=all
-      - -config.expand-env=true
     user: "10001:10001"
     volumes:
       - ./loki-config.yml:/etc/loki/loki-config.yml:ro
@@ -96,9 +96,9 @@ services:
     image: grafana/mimir:latest
     container_name: mimir
     command:
-      - -config.file=/etc/mimir/mimir-config.yml
-      - -target=all
       - -config.expand-env=true
+      - -config.file=/etc/mimir/mimir-config.yml
+      - -target=all 
     ports:
       - "9009:9009"
     environment:
