@@ -90,12 +90,15 @@ jobs:
             cat ip.txt
             sed -i '/# APP_SECRETS_START/,/# APP_SECRETS_END/d' ~/.bashrc
             # Write new block
-            cat <<'BLOCK' >> ~/.bashrc
-            # APP_SECRETS_START
-            export EC2_IP="${EC2_IP}"
-            # APP_SECRETS_END
-            BLOCK
-                          
+            {
+              echo "# APP_SECRETS_START"
+              awk '{print "export " $0}' ip.txt
+              echo "# APP_SECRETS_END"
+            } >> ~/.bashrc
+            
             # Source for current session
             source ~/.bashrc
+            
+            # Debug: show what got written
+            tail -n 5 ~/.bashrc
             EOF
