@@ -67,6 +67,7 @@ services:
     ports:
       - "3200:3200"       # Tempo querier HTTP
     environment:
+      - S3_BUCKET=${S3_BUCKET}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_ACCESS_KEY}
     command:
@@ -79,6 +80,7 @@ services:
     ports:
       - "3100:3100"
     environment:
+      - S3_BUCKET=${S3_BUCKET}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_ACCESS_KEY}
     command:
@@ -97,6 +99,7 @@ services:
     ports:
       - "9009:9009"
     environment:
+      - S3_BUCKET=${S3_BUCKET}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_ACCESS_KEY}
     volumes:
