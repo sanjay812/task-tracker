@@ -110,6 +110,6 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
 
     sudo chown -R 10001:10001 ./loki-data
 
-    docker compose up
+    sudo docker compose up
 
 EOF
