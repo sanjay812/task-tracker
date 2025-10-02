@@ -66,6 +66,9 @@ services:
     container_name: tempo
     ports:
       - "3200:3200"       # Tempo querier HTTP
+    environment:
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_ACCESS_KEY}
     command:
       - -config.file=/etc/tempo/tempo.yml
     volumes:
@@ -75,6 +78,9 @@ services:
     container_name: loki
     ports:
       - "3100:3100"
+    environment:
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_ACCESS_KEY}
     command:
       - -config.file=/etc/loki/loki-config.yml
       - -target=all
@@ -90,6 +96,9 @@ services:
       - -target=all
     ports:
       - "9009:9009"
+    environment:
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_ACCESS_KEY}
     volumes:
       - ./mimir-config.yml:/etc/mimir/mimir-config.yml:ro
       - ./mimir-data:/var/mimir
