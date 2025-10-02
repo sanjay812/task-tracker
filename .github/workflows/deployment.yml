@@ -58,19 +58,10 @@ jobs:
       - name: Push Docker image
         run: |
           docker push 81200/task-tracker:latest
-      - name: Setup SSH key
-        run: | 
-          mkdir -p ~/.ssh
-          cp pem/my-terraform-key.pem ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa
-          # Disable strict host key checking to avoid host verification failure in CI
-          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
       - name: Login to EC2
         env:
           EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
           S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
         run: |
-            ssh -i ~/.ssh/id_rsa ubuntu@$EC2_IP
-
-      - name: Print S3 Bucket Name
-        run: echo "S3 Bucket:${{ secrets.S3_BUCKET_NAME }}"
+            chmod +x deploy.sh
+            ./deploy.sh
