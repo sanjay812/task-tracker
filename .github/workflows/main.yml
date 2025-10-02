@@ -2,13 +2,9 @@ name: Terraform Apply
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to deploy from"
-        required: true
-        default: "infra"
 jobs:
   terraform:
+    if: github.ref == 'refs/heads/infra'
     runs-on: ubuntu-latest
 
     env:
