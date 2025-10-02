@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    image: ghcr.io/sanjay812/task-tracker:v1
+    image: docker.io/81200/task-tracker:latest
     container_name: task-tracker
     ports:
       - "8000:8000"
