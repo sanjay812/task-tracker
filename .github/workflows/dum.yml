@@ -20,24 +20,7 @@ jobs:
         S3_ACCESS_KEY: ${{ secrets.IAM_ACCESS_KEY_ID }}
         S3_SECRET_KEY: ${{ secrets.IAM_SECRET_ACCESS_KEY }}
       run: |
-        echo "EC2 IP: $EC2_IP"
-        echo "S3 Bucket: $S3_BUCKET"
-       
-        for f in yml/*.yml; do envsubst < "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
+         chmod +x deploy.sh
+         ./deploy.sh
 
-    - name: Deploy via SSH
-      env:
-        EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
-        SSH-KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: root
-        username: ${EC2_IP}
-        key: ${SSH-KEY}
-        port: 22
-        script: |
-          cd task-tracker
-          git pull origin main
-          cd yml
-          docker compose up --build -d --force-recreate
-          docker image prune -f
+  
