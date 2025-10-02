@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 jobs:
   terraform:
-    if: github.ref == 'refs/heads/infra'
     runs-on: ubuntu-latest
 
     env:
@@ -16,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: infra 
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
