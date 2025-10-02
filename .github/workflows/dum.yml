@@ -25,7 +25,6 @@ jobs:
        
         for f in yml/*.yml; do envsubst < "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
 
-    steps:
     - name: Deploy via SSH
       uses: appleboy/ssh-action@v0.1.10
       with:
