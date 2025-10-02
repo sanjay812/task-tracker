@@ -43,10 +43,10 @@ jobs:
            terraform output -raw s3_bucket_name
            terraform output -raw iam_access_key_id
            terraform output -raw iam_secret_access_key
-           gh secret set EC2_PUBLIC_IP -b"$(terraform output -raw ec2_public_ip)"
-           gh secret set S3_BUCKET_NAME -b"$(terraform output -raw s3_bucket_name)"
-           gh secret set IAM_ACCESS_KEY_ID -b"$(terraform output -raw iam_access_key_id)"
-           gh secret set IAM_SECRET_ACCESS_KEY -b"$(terraform output -raw iam_secret_access_key)"
+           gh secret set EC2_PUBLIC_IP -b"$(terraform output -raw ec2_public_ip | tr -d '\r' | xargs)"
+           gh secret set S3_BUCKET_NAME -b"$(terraform output -raw s3_bucket_name | tr -d '\r' | xargs)"
+           gh secret set IAM_ACCESS_KEY_ID -b"$(terraform output -raw iam_access_key_id | tr -d '\r' | xargs)"
+           gh secret set IAM_SECRET_ACCESS_KEY -b"$(terraform output -raw iam_secret_access_key | tr -d '\r' | xargs)"
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
     
