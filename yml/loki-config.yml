@@ -17,7 +17,7 @@ ingester:
 
 storage_config:
   aws:
-    bucketnames: ${S3_BUCKET_NAME}
+    bucketnames: ${S3_BUCKET}
     s3forcepathstyle: true
     region: ap-south-1
     access_key_id: ${S3_ACCESS_KEY}
