@@ -27,7 +27,7 @@ chmod 400 ~/.ssh/id_rsa
 echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 ## Copy files
 for f in yml/*.yml; do envsubst < "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
-scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@$EC2_IP:/home/ubuntu/deployments/
+scp -i ~/.ssh/id_rsa -r yml/* ubuntu@$EC2_IP:/home/ubuntu/deployments/
 # --- Connect to EC2 ---
 echo "Connecting to EC2 at $EC2_IP..."
 ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" << 'EOF'
