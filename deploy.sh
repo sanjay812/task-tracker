@@ -26,7 +26,7 @@ chmod 400 ~/.ssh/id_rsa
 # Disable strict host key checking (avoid CI host verification failure)
 echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 ## Copy files
-scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@$EC2_IP:/home/ubuntu/deployments/ 
+scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@$EC2_IP:/home/ubuntu/deployments/
 # --- Connect to EC2 ---
 echo "Connecting to EC2 at $EC2_IP..."
 ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
