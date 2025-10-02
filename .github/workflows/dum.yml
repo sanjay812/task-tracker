@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Use Terraform outputs from secrets
+      env:
+        EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+        AWS_ACCESS_KEY: ${{ secrets.IAM_ACCESS_KEY_ID }}
+        AWS_SECRET_KEY: ${{ secrets.IAM_SECRET_ACCESS_KEY }}
+      run: |
+        echo "EC2 IP: $EC2_IP"
+        echo "S3 Bucket: $S3_BUCKET"
