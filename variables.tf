@@ -1,13 +1,27 @@
 variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "ap-south-1"
+  type = string
 }
 
-variable "ec2_instance_type" {
-  description = "Instance type for EC2"
+variable "ec2_name" {
+  description = "Name of the Security Group"
   type        = string
-  default     = "t3.micro"
 }
 
+variable "key_name" {
+  type = string
+}
 
+variable "sg_name" {
+  description = "Name of the Security Group"
+  type        = string
+}
+
+variable "user_name" {
+  description = "Name of the IAM User"
+  type        = string
+}
+
+variable "bucket_name_prefix" {
+  description = "The prefix for the S3 bucket name"
+  type        = string
+}

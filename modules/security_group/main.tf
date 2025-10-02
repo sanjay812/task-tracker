@@ -1,5 +1,5 @@
 resource "aws_security_group" "this" {
-  name        = var.name
+  name        = var.sg_name
   description = var.description
   ingress {
     from_port   = 22
