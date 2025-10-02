@@ -30,12 +30,12 @@ scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@$EC2_IP:/home/ubuntu/deployments/
 # --- Connect to EC2 ---
 echo "Connecting to EC2 at $EC2_IP..."
 ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
-  "EC2_IP=$EC2_IP \
-   S3_BUCKET=$S3_BUCKET \
-   S3_ACCESS_KEY=$S3_ACCESS_KEY \
-   S3_SECRET_KEY=$S3_SECRET_KEY \
-   DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME \
-   DOCKERHUB_PASSWORD=$DOCKERHUB_PASSWORD \
+  "EC2_IP='$EC2_IP' \
+   S3_BUCKET='$S3_BUCKET' \
+   S3_ACCESS_KEY='$S3_ACCESS_KEY' \
+   S3_SECRET_KEY='$S3_SECRET_KEY' \
+   DOCKERHUB_USERNAME='$DOCKERHUB_USERNAME' \
+   DOCKERHUB_PASSWORD='$DOCKERHUB_PASSWORD' \
    bash -s" << 'EOF'
     if ! sudo docker version &> /dev/null
     then
@@ -110,6 +110,7 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
 
     sudo chown -R 10001:10001 ./loki-data
 
-    sudo docker compose up
+    sudo docker compose --env-file .env up -d
+
 
 EOF
