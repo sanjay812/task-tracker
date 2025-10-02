@@ -1,7 +1,7 @@
 variable "name" {
   description = "Name of the Security Group"
   type        = string
-  default     = "app-ec2"
+  default     = "ec2-01"
 }
 
 variable "instance_type" {

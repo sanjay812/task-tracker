@@ -1,7 +1,7 @@
 variable "name" {
   description = "Name of the Security Group"
   type        = string
-  default     = "app-sg"
+  default     = "01-sg"
 }
 
 variable "description" {

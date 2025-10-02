@@ -1,7 +1,7 @@
 variable "user_name" {
   description = "Name of the IAM User"
   type        = string
-  default     = "mon-user"
+  default     = "user-01"
 }
 
 variable "policy_arn" {
