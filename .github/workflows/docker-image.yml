@@ -59,13 +59,13 @@ jobs:
           docker push $IMAGE
           
       - name: Print EC2 Public IP
-        run: echo "EC2 Public IP: ${{ secrets.EC2_PUBLIC_IP }}"
+        run: echo "${{ secrets.EC2_PUBLIC_IP }}"
 
       - name: Print S3 Bucket Name
-        run: echo "S3 Bucket: ${{ secrets.S3_BUCKET_NAME }}"
+        run: echo "S3 Bucket:${{ secrets.S3_BUCKET_NAME }}"
 
       - name: Print IAM Access Key
-        run: echo "IAM Access Key: ${{ secrets.ACCESS_KEY }}"
+        run: echo "IAM Access Key:${{ secrets.ACCESS_KEY }}"
 
       - name: Print IAM Secret Key
-        run: echo "IAM Secret: ${{ secrets.SECRET_KEY }}"
+        run: echo "IAM Secret:${{ secrets.SECRET_KEY }}"
