@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage:
-# EC2_IP=<your-ec2-ip> S3_BUCKET=<your-s3-bucket> ./deploy.sh
 
 # Check required env variables
 if [[ -z "${EC2_IP:-}" || -z "${S3_BUCKET:-}" ]]; then
@@ -30,7 +28,14 @@ echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
 # --- Connect to EC2 ---
 echo "Connecting to EC2 at $EC2_IP..."
-ssh -i ~/.ssh/id_rsa ubuntu@$EC2_IP << 'EOF'
+ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
+  "EC2_IP=$EC2_IP \
+   S3_BUCKET=$S3_BUCKET \
+   AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
+   AWS_SECRET_KEY=$AWS_SECRET_KEY \
+   DOCKER_USERNAME=$DOCKER_USERNAME \
+   DOCKER_PASSWORD=$DOCKER_PASSWORD \
+   bash -s" << 'EOF'
     if ! sudo docker version &> /dev/null
     then
         echo "Docker not found. Installing..."
