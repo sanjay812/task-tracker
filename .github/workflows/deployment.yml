@@ -88,11 +88,12 @@ jobs:
             ssh -i ~/.ssh/id_rsa ubuntu@$EC2_IP "EC2_IP='${EC2_IP}' bash -s" << 'EOF'
             env | grep EC2
             sed -i '/# APP_SECRETS_START/,/# APP_SECRETS_END/d' ~/.bashrc
-            cat >> ~/.bashrc <<EOL
+            # Write new block
+            cat <<'BLOCK' >> ~/.bashrc
             # APP_SECRETS_START
             export EC2_IP="${EC2_IP}"
             # APP_SECRETS_END
-            EOL
+            BLOCK
                           
             # Source for current session
             source ~/.bashrc
