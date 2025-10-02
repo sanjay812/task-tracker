@@ -95,10 +95,19 @@ jobs:
               awk '{print "export " $0}' ip.txt
               echo "# APP_SECRETS_END"
             } >> ~/.bashrc
+            # --- Step 4: Ensure .profile sources .bashrc ---
+            PROFILE_FILE="$HOME/.profile"
+            if ! grep -q 'source ~/.bashrc' "$PROFILE_FILE"; then
+              echo -e "\n# Source bashrc for all login sessions\n[ -f ~/.bashrc ] && . ~/.bashrc" >> "$PROFILE_FILE"
+            fi
             
-            # Source for current session
+            # --- Step 5: Optional: apply immediately for this session ---
             source ~/.bashrc
             
-            # Debug: show what got written
-            tail -n 5 ~/.bashrc
+            # --- Step 6: Debug: show last 10 lines of .bashrc and .profile ---
+            echo "---- ~/.bashrc ----"
+            tail -n 10 ~/.bashrc
+            echo "---- ~/.profile ----"
+            tail -n 10 ~/.profile
+            
             EOF
