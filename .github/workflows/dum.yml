@@ -1,10 +1,7 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
 
@@ -13,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v5.0.0
+          
     - name: Use Terraform outputs from secrets
       env:
         EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
@@ -22,3 +22,13 @@ jobs:
       run: |
         echo "EC2 IP: $EC2_IP"
         echo "S3 Bucket: $S3_BUCKET"
+       
+        # Loop over all YAML files and replace placeholders
+        for f in yml/*.yml; do
+          sed -i \
+            -e "s|\${{ secrets.S3_BUCKET_NAME }}|$S3_BUCKET|g" \
+            -e "s|\${{ secrets.IAM_ACCESS_KEY_ID }}|$AWS_ACCESS_KEY|g" \
+            -e "s|\${{ secrets.IAM_SECRET_ACCESS_KEY }}|$AWS_SECRET_KEY|g" "$f"
+        done
+
+        cat yml/loki-config.yml
