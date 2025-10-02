@@ -26,3 +26,5 @@ jobs:
         for f in yml/*.yml; do envsubst < "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
 
         cat yml/tempo-config.yml
+        cat yml/mimir-config.yml
+        cat yml/loki-config.yml
