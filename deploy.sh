@@ -34,8 +34,8 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
    S3_BUCKET=$S3_BUCKET \
    S3_ACCESS_KEY=$S3_ACCESS_KEY \
    S3_SECRET_KEY=$S3_SECRET_KEY \
-   DOCKER_USERNAME=$DOCKER_USERNAME \
-   DOCKER_PASSWORD=$DOCKER_PASSWORD \
+   DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME \
+   DOCKERHUB_PASSWORD=$DOCKERHUB_PASSWORD \
    bash -s" << 'EOF'
     if ! sudo docker version &> /dev/null
     then
@@ -102,7 +102,7 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
 
     sudo systemctl status docker --no-pager
 
-    sudo docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+    sudo docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
 
     cd /home/ubuntu/deployments
 
