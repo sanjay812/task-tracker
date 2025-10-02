@@ -15,17 +15,17 @@ common:
       secret_access_key: ${S3_SECRET_KEY}
 blocks_storage:
   s3:
-    bucket_name: "${S3_BUCKET}"
+    bucket_name: ${S3_BUCKET}
   storage_prefix: "blocks"
 
 alertmanager_storage:
   s3:
-    bucket_name: "${S3_BUCKET}"
+    bucket_name: ${S3_BUCKET}
   storage_prefix: "alertmanager"
 
 ruler_storage:
   s3:
-    bucket_name: "${S3_BUCKET}"
+    bucket_name: ${S3_BUCKET}
   storage_prefix: "ruler"
 ingester:
   ring:
