@@ -25,7 +25,8 @@ chmod 400 ~/.ssh/id_rsa
 
 # Disable strict host key checking (avoid CI host verification failure)
 echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-
+## Copy files
+scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@"$EC2_IP":/home/ubuntu/deployments/ 
 # --- Connect to EC2 ---
 echo "Connecting to EC2 at $EC2_IP..."
 ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
@@ -101,12 +102,14 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" \
 
     sudo systemctl status docker --no-pager
 
-    echo *** | sudo docker login ghcr.io -u sanjay812 --password-stdin
+    sudo docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
 
     cd /home/ubuntu/deployments
 
     sudo mkdir -p ./loki-data
 
     sudo chown -R 10001:10001 ./loki-data
+
+    docker compose up
 
 EOF
