@@ -5,7 +5,6 @@ on:
   #pull_request:
   #  branches: [ "main" ]
   workflow_dispatch:
-
 jobs:
   
   build-test:
@@ -87,17 +86,16 @@ jobs:
             ## Copy files
             scp -i ~/.ssh/id_rsa yml/*.yml ubuntu@$EC2_IP:/home/ubuntu/deployments/
             ssh -i ~/.ssh/id_rsa ubuntu@$EC2_IP "EC2_IP='${EC2_IP}' bash -s" << 'EOF'
-                env | grep EC2
-                sed -i '/# APP_SECRETS_START/,/# APP_SECRETS_END/d' ~/.bashrc
+              env | grep EC2
+              sed -i '/# APP_SECRETS_START/,/# APP_SECRETS_END/d' ~/.bashrc
       
-                            # Add new exports
-                            cat >> ~/.bashrc << EOL
-                      
-                # APP_SECRETS_START
-                export EC2_IP="${EC2_IP}"
-                # APP_SECRETS_END
-                EOL
+                          
+                cat >> ~/.bashrc << EOL                     
+# APP_SECRETS_START
+export EC2_IP="${EC2_IP}"
+# APP_SECRETS_END
+EOL
                             
-                            # Source for current session
-                            source ~/.bashrc
+              # Source for current session
+              source ~/.bashrc
             EOF
