@@ -95,14 +95,11 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" << 'EOF'
     sudo systemctl start docker
 
     sudo systemctl status docker --no-pager
-
+    
     cd /home/ubuntu/deployments
-
     sudo mkdir -p ./loki-data
-
     sudo chown -R 10001:10001 ./loki-data
-
-    #sudo docker compose --env-file .env up -d
+    sudo docker compose up -d
 
 
 EOF
