@@ -26,11 +26,14 @@ jobs:
         for f in yml/*.yml; do envsubst < "$f" > "$f.tmp" && mv "$f.tmp" "$f"; done
 
     - name: Deploy via SSH
+      env:
+        EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        SSH-KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: root
-        username: ${{ secrets.EC2_PUBLIC_IP }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        username: ${EC2_IP}
+        key: ${SSH-KEY}
         port: 22
         script: |
           cd task-tracker
