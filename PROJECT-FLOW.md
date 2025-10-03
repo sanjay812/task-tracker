@@ -471,6 +471,10 @@ http {
 
 3. **Go to Explore tab in Grafana Dashboard**
 
+![LOKI](loki.jpg)
+![TEMPO](tempo.jpg)
+![MIMIR](mimir.jpg)
+
 ---
 
 ## 📊 Data Flow
