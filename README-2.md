@@ -85,6 +85,30 @@ All telemetry data is collected via **OpenTelemetry Collector** and visualized i
   - SSL/TLS termination ready
 
 ---
+
+## 📦 Prerequisites
+
+### AWS EC2 Instance
+- **Recommended Instance Type**: t3.medium or larger
+- **OS**: Amazon Linux 2 / Ubuntu 20.04+
+- **Storage**: 50GB+ EBS volume
+- **Security Group Rules**:
+  - Port 80 (HTTP)
+  - Port 443 (HTTPS)
+  - Port 22 (SSH)
+
+### Software Requirements
+```bash
+# Docker Engine 20.10+
+docker --version
+
+# Docker Compose 2.0+
+docker-compose --version
+
+docker login -u <registry  -p <password>
+```
+
+---
 ## 🔄 CI/CD Pipeline
 **Pipeline Overview**
 The GitHub Actions workflow automates the entire deployment process:
@@ -108,30 +132,7 @@ Builds Docker image: 81200/task-tracker:latest
 Pushes image to Docker Hub registry
 Executes deployment script to EC2
 
-
-## 📦 Prerequisites
-
-### AWS EC2 Instance
-- **Recommended Instance Type**: t3.medium or larger
-- **OS**: Amazon Linux 2 / Ubuntu 20.04+
-- **Storage**: 50GB+ EBS volume
-- **Security Group Rules**:
-  - Port 80 (HTTP)
-  - Port 443 (HTTPS)
-  - Port 22 (SSH)
-
-### Software Requirements
-```bash
-# Docker Engine 20.10+
-docker --version
-
-# Docker Compose 2.0+
-docker-compose --version
-```
-
----
-
-## 🚀 Installation & Setup
+## 🚀 Local Installation & Setup
 
 ### 1. Clone the Repository
 ```bash
