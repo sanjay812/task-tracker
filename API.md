@@ -122,42 +122,29 @@ The API will be available at: **http://localhost:8000**
 
 Once the application is running, visit:
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
 - **Prometheus Metrics**: http://localhost:8000/metrics
 
-##  API Endpoints
+# Accessing the Task Tracker API on EC2
+
+## Public Access via EC2 Instance
+
+The application is deployed on AWS EC2 and accessible through a public IP with Nginx as a reverse proxy.
+
+### Base URLs
+
+| Environment | URL | Notes |
+|-------------|-----|-------|
+| **EC2 Production** | `http://13.203.213.97/api` | Behind Nginx proxy |
+| **Local Development** | `http://localhost:8000` | Direct access |
+
+---
+
+## 🌐 API Endpoints (EC2 Production)
 
 ### **Create a Task**
 
-**POST** `/tasks`
-
-Creates a new task in the database.
-
-**Request Body:**
-```json
-{
-  "title": "Buy groceries",
-  "description": "Milk, eggs, and bread",
-  "completed": false
-}
-```
-
-**Response:** `201 Created`
-```json
-{
-  "id": 1,
-  "title": "Buy groceries",
-  "description": "Milk, eggs, and bread",
-  "completed": false,
-  "created_at": "2025-10-02T10:30:00.000Z",
-  "updated_at": "2025-10-02T10:30:00.000Z"
-}
-```
-
-**cURL Example:**
 ```bash
-curl -X POST "http://localhost:8000/tasks" \
+curl -X POST "http://13.203.213.97/api/tasks" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Buy groceries",
@@ -166,160 +153,55 @@ curl -X POST "http://localhost:8000/tasks" \
   }'
 ```
 
----
-
 ### **List All Tasks**
 
-**GET** `/tasks`
-
-Retrieves all tasks, optionally filtered by completion status.
-
-**Query Parameters:**
-- `completed` (optional): `true` | `false` - Filter by completion status
-
-**Response:** `200 OK`
-```json
-[
-  {
-    "id": 1,
-    "title": "Buy groceries",
-    "description": "Milk, eggs, and bread",
-    "completed": false,
-    "created_at": "2025-10-02T10:30:00.000Z",
-    "updated_at": "2025-10-02T10:30:00.000Z"
-  }
-]
-```
-
-**cURL Examples:**
 ```bash
 # Get all tasks
-curl -X GET "http://localhost:8000/tasks"
+curl -X GET "http://13.203.213.97/api/tasks"
 
-# Get only completed tasks
-curl -X GET "http://localhost:8000/tasks?completed=true"
+# Get completed tasks only
+curl -X GET "http://13.203.213.97/api/tasks?completed=true"
 
-# Get only incomplete tasks
-curl -X GET "http://localhost:8000/tasks?completed=false"
+# Get incomplete tasks only
+curl -X GET "http://13.203.213.97/api/tasks?completed=false"
 ```
-
----
 
 ### **Get a Specific Task**
 
-**GET** `/tasks/{task_id}`
-
-Retrieves a single task by ID.
-
-**Path Parameters:**
-- `task_id` (required): Integer - Task ID
-
-**Response:** `200 OK`
-```json
-{
-  "id": 1,
-  "title": "Buy groceries",
-  "description": "Milk, eggs, and bread",
-  "completed": false,
-  "created_at": "2025-10-02T10:30:00.000Z",
-  "updated_at": "2025-10-02T10:30:00.000Z"
-}
-```
-
-**Error Response:** `404 Not Found`
-```json
-{
-  "detail": "Task not found"
-}
-```
-
-**cURL Example:**
 ```bash
-curl -X GET "http://localhost:8000/tasks/1"
+curl -X GET "http://13.203.213.97/api/tasks/1"
 ```
-
----
 
 ### **Delete All Tasks**
 
-**DELETE** `/tasks`
-
-Deletes all tasks and resets the ID sequence.
-
-**Response:** `204 No Content`
-
-**cURL Example:**
 ```bash
-curl -X DELETE "http://localhost:8000/tasks"
+curl -X DELETE "http://13.203.213.97/api/tasks"
+```
+
+### **Prometheus Metrics**
+
+```bash
+curl -X GET "http://13.203.213.97/api/metrics"
 ```
 
 ---
 
-### **Prometheus Metrics**
+## 📚 API Documentation
 
-**GET** `/metrics`
+Access the interactive API documentation:
 
-Exposes Prometheus-formatted metrics.
+- **Swagger UI**: http://13.203.213.97/api/docs
+- **ReDoc**: http://13.203.213.97/api/redoc
 
-**Response:** `200 OK` (Plain text)
-```
-# HELP http_requests_total Total HTTP Requests
-# TYPE http_requests_total counter
-http_requests_total{endpoint="/tasks",http_status="200",method="GET"} 15.0
+---
 
-# HELP http_request_duration_seconds HTTP Request latency in seconds
-# TYPE http_request_duration_seconds histogram
-http_request_duration_seconds_bucket{endpoint="/tasks",le="0.005",method="POST"} 8.0
-```
-
-**cURL Example:**
-```bash
-curl -X GET "http://localhost:8000/metrics"
-```
-
-## 🧪 Testing
-
-### Complete Testing Workflow
-
-```bash
-# 1. Create multiple tasks
-curl -X POST "http://localhost:8000/tasks" \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Task 1", "description": "First task", "completed": false}'
-
-curl -X POST "http://localhost:8000/tasks" \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Task 2", "description": "Second task", "completed": true}'
-
-curl -X POST "http://localhost:8000/tasks" \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Task 3", "description": "Third task", "completed": false}'
-
-# 2. List all tasks
-curl -X GET "http://localhost:8000/tasks"
-
-# 3. Filter completed tasks
-curl -X GET "http://localhost:8000/tasks?completed=true"
-
-# 4. Get specific task
-curl -X GET "http://localhost:8000/tasks/1"
-
-# 5. Check metrics
-curl -X GET "http://localhost:8000/metrics"
-
-# 6. Delete all tasks
-curl -X DELETE "http://localhost:8000/tasks"
-
-# 7. Verify deletion
-curl -X GET "http://localhost:8000/tasks"
-```
-
-### Using Python Requests
+## 🐍 Python Client Example (EC2)
 
 ```python
 import requests
 
-BASE_URL = "http://localhost:8000"
+# EC2 Base URL
+BASE_URL = "http://13.203.213.97/api"
 
 # Create a task
 response = requests.post(f"{BASE_URL}/tasks", json={
@@ -327,107 +209,271 @@ response = requests.post(f"{BASE_URL}/tasks", json={
     "description": "Complete the tutorial",
     "completed": False
 })
-print(response.json())
+print("Created:", response.json())
 
 # List all tasks
 response = requests.get(f"{BASE_URL}/tasks")
-print(response.json())
+print("All tasks:", response.json())
 
 # Get specific task
-response = requests.get(f"{BASE_URL}/tasks/1")
-print(response.json())
+task_id = 1
+response = requests.get(f"{BASE_URL}/tasks/{task_id}")
+print(f"Task {task_id}:", response.json())
+
+# Filter completed tasks
+response = requests.get(f"{BASE_URL}/tasks", params={"completed": True})
+print("Completed tasks:", response.json())
 
 # Delete all tasks
 response = requests.delete(f"{BASE_URL}/tasks")
-print(response.status_code)
+print("Delete status:", response.status_code)
 ```
 
-### Using Postman
+---
 
-1. Import the following collection or create requests manually
-2. Set base URL: `http://localhost:8000`
+## 🧪 Complete Testing Workflow (EC2)
 
-**Create Task:**
-- Method: `POST`
-- URL: `{{base_url}}/tasks`
-- Headers: `Content-Type: application/json`
-- Body (raw JSON):
-```json
-{
-  "title": "Complete project",
-  "description": "Finish the FastAPI project",
-  "completed": false
+```bash
+# 1. Create multiple tasks
+curl -X POST "http://13.203.213.97/api/tasks" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Task 1", "description": "First task", "completed": false}'
+
+curl -X POST "http://13.203.213.97/api/tasks" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Task 2", "description": "Second task", "completed": true}'
+
+curl -X POST "http://13.203.213.97/api/tasks" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Task 3", "description": "Third task", "completed": false}'
+
+# 2. List all tasks
+curl -X GET "http://13.203.213.97/api/tasks"
+
+# 3. Filter completed tasks
+curl -X GET "http://13.203.213.97/api/tasks?completed=true"
+
+# 4. Get specific task
+curl -X GET "http://13.203.213.97/api/tasks/1"
+
+# 5. Check metrics
+curl -X GET "http://13.203.213.97/api/metrics"
+
+# 6. Delete all tasks
+curl -X DELETE "http://13.203.213.97/api/tasks"
+
+# 7. Verify deletion
+curl -X GET "http://13.203.213.97/api/tasks"
+```
+
+---
+
+## ⚙️ Nginx Configuration
+
+The EC2 instance uses Nginx as a reverse proxy with the following configuration:
+
+```nginx
+server {
+    listen 80;
+    server_name 13.203.213.97;
+
+    location /api/ {
+        proxy_pass http://localhost:8000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 }
 ```
 
-##  Docker Deployment
+**Key Points:**
+- All requests to `/api/*` are proxied to `http://localhost:8000/`
+- The `/api` prefix is stripped before forwarding to FastAPI
+- Original client IP and protocol information is preserved in headers
 
-### Using Docker Compose (Recommended)
+---
 
-Create `docker-compose.yml`:
+## 🔒 Security Considerations
 
-```yaml
-version: '3.8'
+### Current Setup
+- ⚠️ Using HTTP (not HTTPS) - suitable for development/testing only
+- Public IP directly exposed
+- No authentication/authorization implemented
 
-services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+### Production Recommendations
+1. **Enable HTTPS** with Let's Encrypt SSL certificate
+2. **Use a domain name** instead of IP address
+3. **Implement authentication** (OAuth2, JWT)
+4. **Add rate limiting** in Nginx
+5. **Configure security headers**
+6. **Use AWS Security Groups** to restrict access
 
-  otel-collector:
-    image: otel/opentelemetry-collector:latest
-    command: ["--config=/etc/otel-collector-config.yml"]
-    volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
-    ports:
-      - "4317:4317"
-      - "4318:4318"
+---
 
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-      otel-collector:
-        condition: service_started
+## 🔄 Switching Between Environments
 
-volumes:
-  postgres_data:
+### Environment-Aware Client
+
+```python
+import os
+import requests
+
+# Automatically detect environment
+ENVIRONMENT = os.getenv("APP_ENV", "local")
+
+BASE_URLS = {
+    "local": "http://localhost:8000",
+    "production": "http://13.203.213.97/api"
+}
+
+BASE_URL = BASE_URLS.get(ENVIRONMENT, BASE_URLS["local"])
+
+# Use BASE_URL for all requests
+response = requests.get(f"{BASE_URL}/tasks")
+print(response.json())
 ```
 
-**Run:**
-```bash
-docker-compose up --build
-```
-
-### Using Docker Only
+### Bash Script
 
 ```bash
-# Build image
-docker build -t task-tracker-api .
+#!/bin/bash
 
-# Run container
-docker run -d \
-  --name task-tracker \
-  -p 8000:8000 \
-  -e DATABASE_URL="postgresql://postgres:password@host.docker.internal:5432/postgres" \
-  task-tracker-api
+# Set environment
+ENV=${1:-local}
+
+if [ "$ENV" = "production" ]; then
+    BASE_URL="http://13.203.213.97/api"
+else
+    BASE_URL="http://localhost:8000"
+fi
+
+echo "Using environment: $ENV"
+echo "Base URL: $BASE_URL"
+
+# Create a task
+curl -X POST "$BASE_URL/tasks" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Test Task", "description": "Testing", "completed": false}'
+
+# List tasks
+curl -X GET "$BASE_URL/tasks"
 ```
+
+**Usage:**
+```bash
+# Local
+./test.sh local
+
+# Production
+./test.sh production
+```
+
+---
+
+## 📊 Monitoring EC2 Deployment
+
+### Check Application Status
+
+```bash
+# SSH into EC2 instance
+ssh -i your-key.pem ubuntu@13.203.213.97
+
+# Check if application is running
+ps aux | grep uvicorn
+
+# Check application logs
+journalctl -u task-tracker -f
+
+# Check Nginx status
+sudo systemctl status nginx
+
+# Check Nginx logs
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log
+```
+
+### Health Check
+
+```bash
+# Simple health check
+curl -I http://13.203.213.97/api/tasks
+
+# Expected response
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+---
+
+## 🚀 Deployment Architecture
+
+```
+Internet
+    ↓
+AWS EC2 (13.203.213.97)
+    ↓
+Nginx (:80) - Reverse Proxy
+    ↓
+FastAPI (:8000) - Application
+    ↓
+PostgreSQL (:5432) - Database
+```
+
+**Request Flow:**
+1. Client sends request to `http://13.203.213.97/api/tasks`
+2. Nginx receives request on port 80
+3. Nginx strips `/api` prefix and forwards to FastAPI on `localhost:8000/tasks`
+4. FastAPI processes request and queries PostgreSQL
+5. Response flows back through Nginx to client
+
+---
+
+## 📱 Postman Configuration
+
+**Environment Variables:**
+
+| Variable | Local Value | Production Value |
+|----------|-------------|------------------|
+| `base_url` | `http://localhost:8000` | `http://13.203.213.97/api` |
+
+**Collection Setup:**
+1. Create requests using `{{base_url}}/tasks`
+2. Switch environments to test local vs production
+3. No other changes needed
+
+---
+
+## 🐛 Troubleshooting EC2 Deployment
+
+### Cannot Connect to EC2
+
+```bash
+# Check AWS Security Group allows port 80
+# Inbound rules should include:
+# Type: HTTP, Port: 80, Source: 0.0.0.0/0
+
+# Test connectivity
+ping 13.203.213.97
+telnet 13.203.213.97 80
+```
+
+### 502 Bad Gateway
+
+```bash
+# Check if FastAPI is running
+curl http://localhost:8000/tasks
+
+# If not running, start the application
+# (SSH into EC2 first)
+```
+
+### 404 Not Found
+
+Ensure you're using the `/api` prefix:
+- ✅ Correct: `http://13.203.213.97/api/tasks`
+- ❌ Wrong: `http://13.203.213.97/tasks`
+
 
 ##  Observability
 
