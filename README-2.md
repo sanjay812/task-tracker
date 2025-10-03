@@ -85,6 +85,29 @@ All telemetry data is collected via **OpenTelemetry Collector** and visualized i
   - SSL/TLS termination ready
 
 ---
+## 🔄 CI/CD Pipeline
+**Pipeline Overview**
+The GitHub Actions workflow automates the entire deployment process:
+Code Push → Run Tests → Build Docker Image → Push to Registry → Deploy to EC2
+**Pipeline Stages**
+**Stage 1: Build & Test (build-test job)**
+
+Checks out code from repository
+Sets up Python 3.11 environment
+Caches pip dependencies for faster builds
+Installs project dependencies
+Starts PostgreSQL test database in Docker
+Runs pytest test suite with coverage
+Fails fast on first test failure
+
+**Stage 2: Build & Push (build-push job)**
+
+Depends on successful test completion
+Logs into Docker Hub
+Builds Docker image: 81200/task-tracker:latest
+Pushes image to Docker Hub registry
+Executes deployment script to EC2
+
 
 ## 📦 Prerequisites
 
