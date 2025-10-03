@@ -112,13 +112,13 @@ docker-compose --version
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repo-url>
-cd observability-stack
+git clone <repo-url>
+cd yml
 ```
 
 ### 2. Project Structure
 ```
-observability-stack/
+yml/
 ├── docker-compose.yml
 ├── nginx.conf
 ├── otel-collector-config.yml
@@ -173,43 +173,49 @@ curl http://localhost:9100/metrics # Node Exporter
 receivers:
   otlp:
     protocols:
-      grpc:
+      grpc: 
         endpoint: 0.0.0.0:4317
+      http: 
+        endpoint: 0.0.0.0:4318
   prometheus:
     config:
       scrape_configs:
-        - job_name: 'node-exporter'
+        - job_name: 'node_exporter'
           static_configs:
-            - targets: ['node-exporter:9100']
+            - targets: ['node-exporter:9100']  # Adjust if Node Exporter runs elsewhere
+        - job_name: 'app'
+          static_configs:
+            - targets: ['task-tracker:8000']  # Your app metrics endpoint
 
 processors:
   batch:
-    timeout: 10s
 
 exporters:
-  loki:
-    endpoint: http://loki:3100/loki/api/v1/push
-  otlp/tempo:
-    endpoint: tempo:4317
+  debug:
+    verbosity: basic
+  otlphttp:
+    traces_endpoint: http://tempo:4316/v1/traces
+    logs_endpoint: http://loki:3100/otlp/v1/logs
+    metrics_endpoint: http://mimir:9009/otlp/v1/metrics
     tls:
       insecure: true
-  prometheusremotewrite:
-    endpoint: http://mimir:9009/api/v1/push
 
 service:
   pipelines:
-    logs:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [loki]
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/tempo]
+      exporters: [otlphttp]
+
     metrics:
       receivers: [otlp, prometheus]
       processors: [batch]
-      exporters: [prometheusremotewrite]
+      exporters: [otlphttp]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]
 ```
 
 ### Tempo Configuration (`tempo-config.yml`)
@@ -221,14 +227,25 @@ distributor:
   receivers:
     otlp:
       protocols:
-        grpc:
-          endpoint: 0.0.0.0:4317
+        grpc: 
+          endpoint: 0.0.0.0:4315
+        http: 
+          endpoint: 0.0.0.0:4316
 
 storage:
   trace:
-    backend: local
-    local:
-      path: /tmp/tempo/blocks
+    backend: s3
+    s3:
+      bucket: ${S3_BUCKET}
+      endpoint: s3.amazonaws.com
+      region: ap-south-1
+      access_key: ${S3_ACCESS_KEY}
+      secret_key: ${S3_SECRET_KEY}
+      insecure: false
+
+compactor:
+  compaction:
+    compaction_window: 1m
 ```
 
 ### Loki Configuration (`loki-config.yml`)
@@ -239,82 +256,130 @@ server:
   http_listen_port: 3100
 
 common:
-  path_prefix: /loki
-  storage:
-    filesystem:
-      chunks_directory: /loki/chunks
-      rules_directory: /loki/rules
-  replication_factor: 1
-  ring:
-    kvstore:
-      store: inmemory
+  path_prefix: /loki   
 
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+    final_sleep: 0s
+
+storage_config:
+  aws:
+    bucketnames: ${S3_BUCKET}
+    s3forcepathstyle: true
+    region: ap-south-1
+    access_key_id: ${S3_ACCESS_KEY}
+    secret_access_key: ${S3_SECRET_KEY}
+  tsdb_shipper:
+    active_index_directory: /loki/tsdb-index
+    cache_location: /loki/tsdb-cache
 schema_config:
   configs:
-    - from: 2024-01-01
+    - from: 2025-09-30
       store: tsdb
-      object_store: filesystem
+      object_store: aws
       schema: v13
       index:
         prefix: index_
         period: 24h
+
+compactor:
+  working_directory: /loki/compactor
+
+limits_config:
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  max_query_lookback: 0s
 ```
 
 ### Mimir Configuration (`mimir-config.yml`)
 ```yaml
+target: all
 multitenancy_enabled: false
 
 server:
   http_listen_port: 9009
+  grpc_listen_port: 9095
 
 common:
   storage:
-    backend: filesystem
-    filesystem:
-      dir: /var/mimir
-
+    backend: s3
+    s3:
+      endpoint: s3.ap-south-1.amazonaws.com
+      region: ap-south-1
+      access_key_id: ${S3_ACCESS_KEY}
+      secret_access_key: ${S3_SECRET_KEY}
 blocks_storage:
-  backend: filesystem
-  filesystem:
-    dir: /var/mimir/blocks
+  s3:
+    bucket_name: ${S3_BUCKET}
+  storage_prefix: "blocks"
 
-compactor:
-  data_dir: /var/mimir/compactor
+alertmanager_storage:
+  s3:
+    bucket_name: ${S3_BUCKET}
+  storage_prefix: "alertmanager"
 
+ruler_storage:
+  s3:
+    bucket_name: ${S3_BUCKET}
+  storage_prefix: "ruler"
 ingester:
   ring:
-    kvstore:
-      store: inmemory
+    replication_factor: 1
 ```
 
 ### Nginx Configuration (`nginx.conf`)
 ```nginx
-events {
-    worker_connections 1024;
-}
+events {}
 
 http {
-    upstream grafana {
-        server grafana:3000;
+    upstream api {
+        server task-tracker:8000;
     }
 
-    upstream api {
-        server api:8000;
+    upstream loki {
+        server loki:3100;
+    }
+
+    upstream tempo {
+        server tempo:3200;
+    }
+    upstream mimir {
+        server tempo:9009;
     }
 
     server {
         listen 80;
-        server_name _;
 
-        location / {
-            proxy_pass http://api;
+        # API routing
+        location /api/ {
+            proxy_pass http://api/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }
 
-        location /grafana/ {
-            proxy_pass http://grafana/;
+        # Loki routing
+        location /loki/ {
+            proxy_pass http://loki/;
             proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        # Tempo routing
+        location /tempo/ {
+            proxy_pass http://tempo/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        # Mimir routing
+        location /tempo/ {
+            proxy_pass http://mimir/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
         }
     }
 }
@@ -327,7 +392,7 @@ http {
 | Service | URL | Default Credentials |
 |---------|-----|-------------------|
 | Grafana Dashboard | `http://<EC2-IP>:3000` | admin / admin |
-| FastAPI Application | `http://<EC2-IP>:8000` | - |
+| FastAPI Application | `http://<EC2-IP>/api` | - |
 | Prometheus Metrics | `http://<EC2-IP>:8888/metrics` | - |
 | Node Exporter | `http://<EC2-IP>:9100/metrics` | - |
 
@@ -337,21 +402,21 @@ http {
 2. **Add Data Sources**:
 
 **Loki:**
-- URL: `http://loki:3100`
+- URL: `http://<EC2-IP>/loki`
 - Access: Server (default)
+- Skip TLS verification
 
 **Tempo:**
-- URL: `http://tempo:3200`
+- URL: `http://<EC2-IP>/tempo`
 - Access: Server (default)
+- Skip TLS verification
 
 **Mimir:**
-- URL: `http://mimir:9009/prometheus`
+- URL: `http://<EC2-IP>/mimir/prometheus`
 - Access: Server (default)
+- Skip TLS verification
 
-3. **Import Dashboards**:
-   - Node Exporter Full (ID: 1860)
-   - Loki Logs (ID: 13639)
-   - OpenTelemetry APM (ID: 19419)
+3. **Go to Explore tab in Grafana Dashboard**
 
 ---
 
@@ -554,29 +619,4 @@ docker-compose up -d --scale api=3
 
 ---
 
-## 🤝 Contributing
 
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Submit a pull review
-
----
-
-## 📄 License
-
-[Your License Here]
-
----
-
-## 👥 Support
-
-For issues and questions:
-- Create an issue in the repository
-- Contact: your-email@example.com
-
----
-
-**Last Updated**: October 2025  
-**Version**: 1.0.0
