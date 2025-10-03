@@ -96,7 +96,19 @@ All telemetry data is collected via **OpenTelemetry Collector** and visualized i
   - Port 80 (HTTP)
   - Port 443 (HTTPS)
   - Port 22 (SSH)
+  - Port 3000 (CUSTOM TCP)
+  
+**Terraform script is used to provision the Resources**
+**git clone -b infra <repo-url>**
+## 🔄 CI/CD Pipeline
+**Pipeline Overview**
+The GitHub Actions workflow automates the entire provisioning process:
+**terraform.yml**
+Manual trigger -> resource will get provisioned
 
+Notes:
+**Configure AWS Credentials in Github Secrets**
+**the terraform state file is stored in a S3 bucket for state persistent across github runners.**
 ### Software Requirements
 ```bash
 # Docker Engine 20.10+
