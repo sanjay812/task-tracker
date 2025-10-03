@@ -1,6 +1,6 @@
 # Complete Observability Stack - Deployment Guide
 
-![Architecture Diagram](./architecture-diagram.jpg)
+![Architecture Diagram](architecture-diagram.jpg)
 
 ## 📋 Table of Contents
 - [Overview](#overview)
