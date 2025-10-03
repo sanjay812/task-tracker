@@ -497,7 +497,7 @@ echo 'DATABASE_URL="postgresql://user:pass@host:5432/dbname"' > .env
 task-tracker-api/
 ├── .github/
 │   └── workflows/
-│       └── ci-cd.yml          # GitHub Actions workflow
+│       └── deployment.yml      # GitHub Actions workflow
 ├── main.py                     # FastAPI application
 ├── requirements.txt            # Python dependencies
 ├── Dockerfile                  # Docker configuration
