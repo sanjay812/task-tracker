@@ -107,6 +107,11 @@ ssh -i ~/.ssh/id_rsa ubuntu@"$EC2_IP" << 'EOF'
       echo "Containers already running → Update only app"
       sudo docker compose up -d --pull always api
     fi
-
+    
+    # Optional: clean up unused images, stopped containers, and volumes
+    echo "Cleaning up unused Docker resources..."
+    sudo docker system prune -af
+    sudo docker volume prune -f
+    sudo docker network prune -f || true
 
 EOF
