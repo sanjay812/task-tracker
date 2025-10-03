@@ -7,7 +7,7 @@ A production-ready FastAPI application for task management with PostgreSQL datab
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791.svg?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Enabled-blue.svg)](https://opentelemetry.io)
 
-## ✨ Features
+##  Features
 
 -  **CRUD Operations** - Create, Read, List, and Delete tasks
 -  **PostgreSQL Database** - Reliable data persistence with SQLAlchemy
