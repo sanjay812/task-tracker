@@ -444,28 +444,28 @@ http {
 
 | Service | URL | Default Credentials |
 |---------|-----|-------------------|
-| Grafana Dashboard | `http://13.203.213.97:3000` | admin / admin |
-| FastAPI Application | `http://13.203.213.97/api` | - |
-| Prometheus Metrics | `http://13.203.213.97:8888/metrics` | - |
-| Node Exporter | `http://13.203.213.97:9100/metrics` | - |
+| Grafana Dashboard | `http://65.2.142.19:3000` | admin / admin |
+| FastAPI Application | `http://65.2.142.19/api` | - |
+| Prometheus Metrics | `http://65.2.142.19:8888/metrics` | - |
+| Node Exporter | `http://65.2.142.19:9100/metrics` | - |
 
 ### Setting Up Grafana Data Sources
 
-1. **Login to Grafana** (`http://13.203.213.97:3000`)
+1. **Login to Grafana** (`http://65.2.142.19:3000`)
 2. **Add Data Sources**:
 
 **Loki:**
-- URL: `http://13.203.213.97/loki`
+- URL: `http://65.2.142.19/loki`
 - Access: Server (default)
 - Skip TLS verification
 
 **Tempo:**
-- URL: `http://13.203.213.97/tempo`
+- URL: `http://65.2.142.19/tempo`
 - Access: Server (default)
 - Skip TLS verification
 
 **Mimir:**
-- URL: `http://13.203.213.97/mimir/prometheus`
+- URL: `http://65.2.142.19/mimir/prometheus`
 - Access: Server (default)
 - Skip TLS verification
 
