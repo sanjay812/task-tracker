@@ -5,7 +5,7 @@ variable "ec2_name" {
 
 variable "instance_type" {
   type = string
-  default = "t3.xlarge"
+  default = "t3.micro"
 }
 
 variable "key_name" {
