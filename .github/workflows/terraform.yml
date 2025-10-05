@@ -48,5 +48,5 @@ jobs:
            gh secret set IAM_ACCESS_KEY_ID -b"$(terraform output -raw iam_access_key_id | tr -d '\r' | xargs)"
            gh secret set IAM_SECRET_ACCESS_KEY -b"$(terraform output -raw iam_secret_access_key | tr -d '\r' | xargs)"
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
