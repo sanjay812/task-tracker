@@ -134,7 +134,7 @@ The application is deployed on AWS EC2 and accessible through a public IP with N
 
 | Environment | URL | Notes |
 |-------------|-----|-------|
-| **EC2 Production** | `http://13.203.213.97/api` | Behind Nginx proxy |
+| **EC2 Production** | `http://65.2.142.19/api` | Behind Nginx proxy |
 | **Local Development** | `http://localhost:8000` | Direct access |
 
 ---
@@ -144,7 +144,7 @@ The application is deployed on AWS EC2 and accessible through a public IP with N
 ### **Create a Task**
 
 ```bash
-curl -X POST "http://13.203.213.97/api/tasks" \
+curl -X POST "http://65.2.142.19/api/tasks" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Buy groceries",
@@ -157,31 +157,31 @@ curl -X POST "http://13.203.213.97/api/tasks" \
 
 ```bash
 # Get all tasks
-curl -X GET "http://13.203.213.97/api/tasks"
+curl -X GET "http://65.2.142.19/api/tasks"
 
 # Get completed tasks only
-curl -X GET "http://13.203.213.97/api/tasks?completed=true"
+curl -X GET "http://65.2.142.19/api/tasks?completed=true"
 
 # Get incomplete tasks only
-curl -X GET "http://13.203.213.97/api/tasks?completed=false"
+curl -X GET "http://65.2.142.19/api/tasks?completed=false"
 ```
 
 ### **Get a Specific Task**
 
 ```bash
-curl -X GET "http://13.203.213.97/api/tasks/1"
+curl -X GET "http://65.2.142.19/api/tasks/1"
 ```
 
 ### **Delete All Tasks**
 
 ```bash
-curl -X DELETE "http://13.203.213.97/api/tasks"
+curl -X DELETE "http://65.2.142.19/api/tasks"
 ```
 
 ### **Prometheus Metrics**
 
 ```bash
-curl -X GET "http://13.203.213.97/api/metrics"
+curl -X GET "http://65.2.142.19/api/metrics"
 ```
 
 ---
@@ -190,8 +190,8 @@ curl -X GET "http://13.203.213.97/api/metrics"
 
 Access the interactive API documentation:
 
-- **Swagger UI**: http://13.203.213.97/api/docs
-- **ReDoc**: http://13.203.213.97/api/redoc
+- **Swagger UI**: http://65.2.142.19/api/docs
+- **ReDoc**: http://65.2.142.19/api/redoc
 
 ---
 
@@ -201,7 +201,7 @@ Access the interactive API documentation:
 import requests
 
 # EC2 Base URL
-BASE_URL = "http://13.203.213.97/api"
+BASE_URL = "http://65.2.142.19/api"
 
 # Create a task
 response = requests.post(f"{BASE_URL}/tasks", json={
@@ -235,35 +235,35 @@ print("Delete status:", response.status_code)
 
 ```bash
 # 1. Create multiple tasks
-curl -X POST "http://13.203.213.97/api/tasks" \
+curl -X POST "http://65.2.142.19/api/tasks" \
   -H "Content-Type: application/json" \
   -d '{"title": "Task 1", "description": "First task", "completed": false}'
 
-curl -X POST "http://13.203.213.97/api/tasks" \
+curl -X POST "http://65.2.142.19/api/tasks" \
   -H "Content-Type: application/json" \
   -d '{"title": "Task 2", "description": "Second task", "completed": true}'
 
-curl -X POST "http://13.203.213.97/api/tasks" \
+curl -X POST "http://65.2.142.19/api/tasks" \
   -H "Content-Type: application/json" \
   -d '{"title": "Task 3", "description": "Third task", "completed": false}'
 
 # 2. List all tasks
-curl -X GET "http://13.203.213.97/api/tasks"
+curl -X GET "http://65.2.142.19/api/tasks"
 
 # 3. Filter completed tasks
-curl -X GET "http://13.203.213.97/api/tasks?completed=true"
+curl -X GET "http://65.2.142.19/api/tasks?completed=true"
 
 # 4. Get specific task
-curl -X GET "http://13.203.213.97/api/tasks/1"
+curl -X GET "http://65.2.142.19/api/tasks/1"
 
 # 5. Check metrics
-curl -X GET "http://13.203.213.97/api/metrics"
+curl -X GET "http://65.2.142.19/api/metrics"
 
 # 6. Delete all tasks
-curl -X DELETE "http://13.203.213.97/api/tasks"
+curl -X DELETE "http://65.2.142.19/api/tasks"
 
 # 7. Verify deletion
-curl -X GET "http://13.203.213.97/api/tasks"
+curl -X GET "http://65.2.142.19/api/tasks"
 ```
 
 ---
@@ -275,7 +275,7 @@ The EC2 instance uses Nginx as a reverse proxy with the following configuration:
 ```nginx
 server {
     listen 80;
-    server_name 13.203.213.97;
+    server_name 65.2.142.19;
 
     location /api/ {
         proxy_pass http://localhost:8000/;
@@ -324,7 +324,7 @@ ENVIRONMENT = os.getenv("APP_ENV", "local")
 
 BASE_URLS = {
     "local": "http://localhost:8000",
-    "production": "http://13.203.213.97/api"
+    "production": "http://65.2.142.19/api"
 }
 
 BASE_URL = BASE_URLS.get(ENVIRONMENT, BASE_URLS["local"])
@@ -343,7 +343,7 @@ print(response.json())
 ENV=${1:-local}
 
 if [ "$ENV" = "production" ]; then
-    BASE_URL="http://13.203.213.97/api"
+    BASE_URL="http://65.2.142.19/api"
 else
     BASE_URL="http://localhost:8000"
 fi
@@ -377,7 +377,7 @@ curl -X GET "$BASE_URL/tasks"
 
 ```bash
 # SSH into EC2 instance
-ssh -i your-key.pem ubuntu@13.203.213.97
+ssh -i your-key.pem ubuntu@65.2.142.19
 
 # Check if application is running
 ps aux | grep uvicorn
@@ -397,7 +397,7 @@ sudo tail -f /var/log/nginx/error.log
 
 ```bash
 # Simple health check
-curl -I http://13.203.213.97/api/tasks
+curl -I http://65.2.142.19/api/tasks
 
 # Expected response
 HTTP/1.1 200 OK
@@ -411,7 +411,7 @@ Content-Type: application/json
 ```
 Internet
     ↓
-AWS EC2 (13.203.213.97)
+AWS EC2 (65.2.142.19)
     ↓
 Nginx (:80) - Reverse Proxy
     ↓
@@ -421,7 +421,7 @@ PostgreSQL (:5432) - Database
 ```
 
 **Request Flow:**
-1. Client sends request to `http://13.203.213.97/api/tasks`
+1. Client sends request to `http://65.2.142.19/api/tasks`
 2. Nginx receives request on port 80
 3. Nginx strips `/api` prefix and forwards to FastAPI on `localhost:8000/tasks`
 4. FastAPI processes request and queries PostgreSQL
@@ -435,7 +435,7 @@ PostgreSQL (:5432) - Database
 
 | Variable | Local Value | Production Value |
 |----------|-------------|------------------|
-| `base_url` | `http://localhost:8000` | `http://13.203.213.97/api` |
+| `base_url` | `http://localhost:8000` | `http://65.2.142.19/api` |
 
 **Collection Setup:**
 1. Create requests using `{{base_url}}/tasks`
@@ -454,8 +454,8 @@ PostgreSQL (:5432) - Database
 # Type: HTTP, Port: 80, Source: 0.0.0.0/0
 
 # Test connectivity
-ping 13.203.213.97
-telnet 13.203.213.97 80
+ping 65.2.142.19
+telnet 65.2.142.19 80
 ```
 
 ### 502 Bad Gateway
@@ -471,8 +471,8 @@ curl http://localhost:8000/tasks
 ### 404 Not Found
 
 Ensure you're using the `/api` prefix:
-- ✅ Correct: `http://13.203.213.97/api/tasks`
-- ❌ Wrong: `http://13.203.213.97/tasks`
+- ✅ Correct: `http://65.2.142.19/api/tasks`
+- ❌ Wrong: `http://65.2.142.19/tasks`
 
 
 ##  Observability
