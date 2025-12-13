@@ -1,4 +1,4 @@
-module "web_security_group" {
+module "security-group" {
   source = "./modules/security-group"
 
   name        = "web_sg"
@@ -57,7 +57,7 @@ locals {
 }
 
 # Create multiple EC2 instances using for_each
-module "ec2_instances" {
+module "ec2" {
   source   = "./modules/ec2-instance"
   for_each = local.ec2_instances
 
