@@ -1,5 +1,5 @@
 resource "aws_instance" "ec2_example" {
-  ami           = "ami-0767046d1677be5a0"
+  ami           = "ami-02b8269d5e85954ef"
   instance_type = "t2.micro"
   tags = {
     Name = "tf-ec2-01"
