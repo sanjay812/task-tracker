@@ -1,10 +1,7 @@
 name: Checkout Main Branch
 
 on:
-  push:
-    branches:
-      - main
-
+  workflow_dispatch:
 jobs:
   checkout:
     runs-on: self-hosted
