@@ -11,6 +11,10 @@ on:
         description: 'Set to true to import resources'
         type: boolean
         default: false
+      destroy:
+        description: "Destroy resources"
+        type: boolean
+        default: false
 jobs:
   checkout:
     runs-on: self-hosted
@@ -32,6 +36,11 @@ jobs:
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
+        if: github.event.inputs.destroy != 'true'
         run: terraform plan
       - name: Terraform Apply
+        if: github.event.inputs.destroy != 'true'
         run: terraform apply -auto-approve
+      - name: Terraform Destroy
+        if: github.event.inputs.destroy == 'true'
+        run: terraform destroy -auto-approve
