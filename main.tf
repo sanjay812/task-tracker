@@ -58,13 +58,13 @@ locals {
 
 # Create multiple EC2 instances using for_each
 module "ec2" {
-  source   = "./modules/ec2-instance"
+  source   = "./modules/ec2"
   for_each = local.ec2_instances
 
   ami               = each.value.ami
   instance_type     = each.value.instance_type
   instance_name     = "tf-${each.key}"
   key_name          = "sanjay-aws"
-  security_group_id = module.web_security_group.security_group_name
+  security_group_id = module.security-group.security_group_name
   user_data         = local.apache_user_data
 }
