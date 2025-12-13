@@ -65,6 +65,6 @@ module "ec2" {
   instance_type     = each.value.instance_type
   instance_name     = "tf-${each.key}"
   key_name          = "sanjay-aws"
-  security_group_id = module.security-group.name
+  security_group_id = module.security_group.security_group_id
   user_data         = local.apache_user_data
 }
