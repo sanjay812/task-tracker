@@ -2,6 +2,15 @@ name: Checkout Main Branch
 
 on:
   workflow_dispatch:
+    inputs:
+      refresh_required:
+        description: 'Set to true to refresh state'
+        type: boolean
+        default: false
+      import_resources:
+        description: 'Set to true to import resources'
+        type: boolean
+        default: false
 jobs:
   checkout:
     runs-on: self-hosted
