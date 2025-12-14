@@ -1,11 +1,11 @@
-output "dev_proj_1_vpc_id" {
-  value = aws_vpc.dev_proj_1_vpc_ap-south-1.id
+output "vpc_id" {
+  value = aws_vpc.vpc.id
 }
 
-output "dev_proj_1_public_subnets" {
-  value = aws_subnet.dev_proj_1_vpc_ap-south-1.*.id
+output "public_subnets_id" {
+  value = aws_subnet.pub-subnet.*.id
 }
 
 output "public_subnet_cidr_block" {
-  value = aws_subnet.dev_proj_1_vpc_ap-south-1.*.cidr_block
+  value = aws_subnet.pub-subnet.*.cidr_block
 }
