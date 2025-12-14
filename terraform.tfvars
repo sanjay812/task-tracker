@@ -37,6 +37,6 @@ user_data = <<-EOF
 
 vpc_cidr = "11.0.0.0/22"
 vpc_name = "test-proj-vpc-01"
-cidr_public_subnet = "11.0.0.0/26"
+#cidr_public_subnet = "11.0.0.0/26"
 #vaeu_availability_zone" {}
-cidr_private_subnet = "11.0.1.0/26"
+#cidr_private_subnet = "11.0.1.0/26"
