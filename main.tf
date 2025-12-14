@@ -1,25 +1,8 @@
 module "security-group" {
   source = "./modules/security-group"
-
   name        = "web_sg"
   description = "Allow inbound traffic on ports 22 and 80"
-
-  ingress_rules = [
-    {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-      description = "Allow SSH"
-    },
-    {
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-      description = "Allow HTTP"
-    }
-  ]
+  ingress_rules = var.ingress_rules
 }
 
 locals {
@@ -38,18 +21,6 @@ locals {
       ami           = "ami-02b8269d5e85954ef"
     }
     ec2-02 = {
-      instance_type = "t2.micro"
-      ami           = "ami-02b8269d5e85954ef"
-    }
-    ec2-03 = {
-      instance_type = "t2.small"
-      ami           = "ami-02b8269d5e85954ef"
-    }
-    ec2-04 = {
-      instance_type = "t2.micro"
-      ami           = "ami-02b8269d5e85954ef"
-    }
-    ec2-05 = {
       instance_type = "t2.micro"
       ami           = "ami-02b8269d5e85954ef"
     }
