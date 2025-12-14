@@ -1,5 +1,5 @@
 # Setup VPC
-resource "aws_vpc" "this" {
+resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
   tags = {
     Name = var.vpc_name
@@ -8,9 +8,9 @@ resource "aws_vpc" "this" {
 
 
 # Setup public subnet
-resource "aws_subnet" "this" {
+resource "aws_subnet" "pub-subnet" {
   count             = length(var.cidr_public_subnet)
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.vpc.id
   cidr_block        = element(var.cidr_public_subnet, count.index)
   availability_zone = element(var.ap_availability_zone, count.index)
   tags = {
@@ -19,9 +19,9 @@ resource "aws_subnet" "this" {
 }
 
 # Setup private subnet
-resource "aws_subnet" "this" {
+resource "aws_subnet" "pvt-subnet" {
   count             = length(var.cidr_private_subnet)
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.vpc.id
   cidr_block        = element(var.cidr_private_subnet, count.index)
   availability_zone = element(var.ap_availability_zone, count.index)
 
@@ -31,19 +31,19 @@ resource "aws_subnet" "this" {
 }
 
 # Setup Internet Gateway
-resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
   tags = {
     Name = "dev-proj-1-igw"
   }
 }
 
 # Public Route Table
-resource "aws_route_table" "this" {
-  vpc_id = aws_vpc.dev_proj_1_vpc_ap_south_1.id
+resource "aws_route_table" "pub-rt" {
+  vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this.id
+    gateway_id = aws_internet_gateway.igw.id
   }
   tags = {
     Name = "dev-proj-1-public-rt"
@@ -51,24 +51,23 @@ resource "aws_route_table" "this" {
 }
 
 # Public Route Table and Public Subnet Association
-resource "aws_route_table_association" "this" {
-  count          = length(aws_subnet.this)
-  subnet_id      = aws_subnet.this[count.index].id
-  route_table_id = aws_route_table.this.id
+resource "aws_route_table_association" "pub-rt-assoc" {
+  count          = length(aws_subnet.pub-subnet)
+  subnet_id      = aws_subnet.pub-subnet[count.index].id
+  route_table_id = aws_route_table.pub-rt.id
 }
 
 # Private Route Table
-resource "aws_route_table" "this" {
-  vpc_id = aws_vpc.this.id
+resource "aws_route_table" "pvt-rt" {
+  vpc_id = aws_vpc.vpc.id
   #depends_on = [aws_nat_gateway.nat_gateway]
   tags = {
     Name = "dev-proj-1-private-rt"
   }
 }
-
 # Private Route Table and private Subnet Association
-resource "aws_route_table_association" "this" {
-  count          = length(aws_subnet.this)
-  subnet_id      = aws_subnet.this[count.index].id
-  route_table_id = aws_route_table.this.id
+resource "aws_route_table_association" "pvt-rt-assoc" {
+  count          = length(aws_subnet.pvt-subnet)
+  subnet_id      = aws_subnet.pvt-subnet[count.index].id
+  route_table_id = aws_route_table.pvt-rt.id
 }
