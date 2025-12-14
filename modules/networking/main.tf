@@ -1,5 +1,5 @@
 # Setup VPC
-resource "aws_vpc" "dev_proj_1_vpc_ap-south-1" {
+resource "aws_vpc" "dev_proj_1_vpc_ap_south-1" {
   cidr_block = var.vpc_cidr
   tags = {
     Name = var.vpc_name
