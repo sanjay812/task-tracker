@@ -8,3 +8,15 @@ variable "ingress_rules" {
     description = string
   }))
 }
+
+variable "user_data"{
+    type = string
+} 
+
+variable "ec2_instances" {
+  description = "EC2 instances configuration"
+  type = map(object({
+    instance_type = string
+    ami           = string
+  }))
+}

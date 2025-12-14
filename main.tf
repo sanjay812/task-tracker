@@ -5,39 +5,19 @@ module "security-group" {
   ingress_rules = var.ingress_rules
 }
 
-locals {
-  apache_user_data = <<-EOF
-    #! /bin/bash
-    yes | sudo apt update
-    yes | sudo apt install apache2
-    echo "<h1>Server Details</h1><p><strong>Hostname:</strong> $(hostname)</p><p><strong>IP Address:</strong> $(hostname -I | cut -d" " -f1)</p>" > /var/www/html/index.html
-    sudo systemctl restart apache2
-  EOF
 
-  # Define all your EC2 instances here
-  ec2_instances = {
-    ec2-01 = {
-      instance_type = "t2.micro"
-      ami           = "ami-02b8269d5e85954ef"
-    }
-    ec2-02 = {
-      instance_type = "t2.micro"
-      ami           = "ami-02b8269d5e85954ef"
-    }
-  }
-}
 
 # Create multiple EC2 instances using for_each
 module "ec2" {
   source   = "./modules/ec2"
-  for_each = local.ec2_instances
+  for_each = var.ec2_instances
 
   ami               = each.value.ami
   instance_type     = each.value.instance_type
   instance_name     = "tf-${each.key}"
   key_name          = "demo_key"
   security_group_id = module.security-group.security_group_id
-  user_data         = local.apache_user_data
+  user_data         = var.user_data
 }
 
 resource "aws_key_pair" "ssh_public_key" {
