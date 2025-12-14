@@ -37,6 +37,6 @@ user_data = <<-EOF
 
 vpc_cidr = "11.0.0.0/22"
 vpc_name = "test-proj-vpc-01"
-cidr_public_subnet          = ["11.0.21.0/24", "11.0.22.0/24", "11.0.23.0/24"]
-cidr_private_subnet         = ["11.0.11.0/24", "11.0.12.0/24", "11.0.13.0/24"]
+cidr_public_subnet          = ["11.0.0.0/24", "11.0.1.0/24"]
+cidr_private_subnet         = ["11.0.2.0/24", "11.0.3.0/24"]
 ap_availability_zone        = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
