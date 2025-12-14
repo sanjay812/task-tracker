@@ -1,4 +1,4 @@
-ingress_rules = [
+/*ingress_rules = [
     {
       from_port   = 22
       to_port     = 22
@@ -33,4 +33,10 @@ user_data = <<-EOF
       instance_type = "t2.micro"
       ami           = "ami-02b8269d5e85954ef"
     }
-  }
+  }*/
+
+vpc_cidr = "11.0.0.0/22"
+vpc_name = "test-proj-vpc-01"
+cidr_public_subnet = "11.0.0.0/26"
+#vaeu_availability_zone" {}
+cidr_private_subnet = "11.0.1.0/26"
