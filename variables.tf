@@ -27,3 +27,14 @@ variable "vpc_cidr" {
 variable "vpc_name" {
     type = string
 }
+
+variable "cidr_private_subnet" {
+  
+}
+
+variable "cidr_public_subnet" {
+  
+}
+variable "ap_availability_zone" {
+  
+}
